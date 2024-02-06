@@ -1,0 +1,30 @@
+const asyncHandler = (fn) => async (req, res, next) => {
+  try {
+    const result = await fn(req, res);
+    res.json(result);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: 'An error occurred' });
+  }
+};
+
+
+
+
+const createTicket = asyncHandler(async (req, res) => {
+  const { number, title, description, status } = req.body;
+  const ticket = new Ticket({ number, title, description, status });
+  const savedTicket = await ticket.save();
+  return savedTicket;
+});
+
+const getAllTickets = asyncHandler(async () => {
+  const tickets = await Ticket.find();
+  return tickets;
+});
+
+const getTicketsByStatus = asyncHandler(async (req) => {
+  const { status } = req.params;
+  const tickets = await Ticket.find({ status });
+  return tickets;
+});
